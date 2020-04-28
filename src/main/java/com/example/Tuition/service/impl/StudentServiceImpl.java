@@ -36,4 +36,9 @@ public class StudentServiceImpl implements StudentService {
 
     studentRepository.save(student);
   }
+
+  @Override
+  public Student getUserByUUID(String id) {
+    return studentRepository.findByUuid(id);
+  }
 }

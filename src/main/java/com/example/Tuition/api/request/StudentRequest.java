@@ -1,5 +1,6 @@
 package com.example.Tuition.api.request;
 
+import com.example.Tuition.model.EducationBoard;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,4 +22,6 @@ public class StudentRequest {
 
   @NotBlank
   private String password;
+
+  private EducationBoard educationBoard;
 }

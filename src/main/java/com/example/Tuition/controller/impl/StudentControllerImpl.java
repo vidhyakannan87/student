@@ -4,9 +4,11 @@ import com.example.Tuition.api.request.StudentLoginRequest;
 import com.example.Tuition.api.request.StudentRequest;
 import com.example.Tuition.api.response.AuthenticationResponse;
 import com.example.Tuition.controller.StudentController;
+import com.example.Tuition.model.Student;
 import com.example.Tuition.service.OktaAuthenticationService;
 import com.example.Tuition.service.StudentService;
 import com.okta.authn.sdk.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,5 +33,11 @@ public class StudentControllerImpl implements StudentController {
   @Override
   public AuthenticationResponse login(StudentLoginRequest studentLoginRequest) throws IOException, AuthenticationException {
     return oktaAuthenticationService.authenticateUser(studentLoginRequest);
+  }
+
+  @Override
+  public Student getStudentFromBearerToken() {
+    String id = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    return studentService.getUserByUUID(id);
   }
 }
