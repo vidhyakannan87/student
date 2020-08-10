@@ -9,5 +9,6 @@ public interface StudentService {
 
   Student getUserByUUID(String id);
 
+  void saveStudent(Student student);
 
 }

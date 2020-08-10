@@ -1,10 +1,14 @@
 package com.example.Tuition.api.request;
 
 import com.example.Tuition.model.EducationBoard;
+import com.example.Tuition.model.Interests;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,4 +28,11 @@ public class StudentRequest {
   private String password;
 
   private EducationBoard educationBoard;
+
+  private String phoneNumber;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+  private LocalDate dateOfBirth;
+
+  private List<Interests> interests;
 }
