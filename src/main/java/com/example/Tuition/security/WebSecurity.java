@@ -22,6 +22,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
   private final OktaConfig oktaConfig;
   private final String SIGN_UP_URL = "/students/sign-up";
   private final String LOGIN_URL = "/students/login";
+  private final String RESET_PASSWORD = "/students/resetPassword";
+  private final String UPDATE_PASSWORD = "/students/updatePassword";
 
   private final AuthenticationEntryPoint myAuthenticationEntryPoint;
 
@@ -35,6 +37,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     http.cors().and().csrf().disable().authorizeRequests()
             .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
             .antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
+            .antMatchers(HttpMethod.POST,RESET_PASSWORD).permitAll()
+            .antMatchers(HttpMethod.POST,UPDATE_PASSWORD).permitAll()
             .antMatchers("/swagger-ui.html").permitAll()
             .antMatchers("/swagger-resources").permitAll()
             .antMatchers("/v2/api-docs").permitAll()

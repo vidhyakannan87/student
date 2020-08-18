@@ -1,17 +1,12 @@
 package com.example.Tuition.controller.impl;
 
-import com.example.Tuition.api.request.StripeTokenRequest;
-import com.example.Tuition.api.request.StudentLoginRequest;
-import com.example.Tuition.api.request.StudentRequest;
+import com.example.Tuition.api.request.*;
 import com.example.Tuition.api.response.AuthenticationResponse;
 import com.example.Tuition.controller.StudentController;
-import com.example.Tuition.model.Student;
 import com.example.Tuition.service.OktaAuthenticationService;
 import com.example.Tuition.service.StudentPaymentService;
 import com.example.Tuition.service.StudentService;
 import com.okta.authn.sdk.AuthenticationException;
-import com.stripe.exception.CardException;
-import com.stripe.exception.InvalidRequestException;
 import com.stripe.exception.StripeException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 
 @RestController
@@ -37,12 +33,13 @@ public class StudentControllerImpl implements StudentController {
   @Override
   public ResponseEntity signUpStudent(@RequestBody StudentRequest studentRequest) {
     studentService.signUpStudent(studentRequest);
-    return  ResponseUtility.buildOkResponse();
+    return ResponseUtility.buildOkResponse();
   }
 
   @Override
   public ResponseEntity login(StudentLoginRequest studentLoginRequest) throws IOException, AuthenticationException {
-    return  ResponseUtility.buildOkResponse(oktaAuthenticationService.authenticateUser(studentLoginRequest));
+    AuthenticationResponse authenticationResponse = oktaAuthenticationService.authenticateUser(studentLoginRequest);
+    return ResponseUtility.buildOkResponse(authenticationResponse);
 
   }
 
@@ -53,8 +50,45 @@ public class StudentControllerImpl implements StudentController {
   }
 
   @Override
-  public ResponseEntity setPayment(@PathVariable String id, @RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException {
-    studentPaymentService.createStripeCustomerProfile(stripeTokenRequest,id);
+  public ResponseEntity setPaymentProfile(@PathVariable String id, @RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException {
+    studentPaymentService.createStripeCustomerProfile(stripeTokenRequest, id);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity payTuitionFees(@PathVariable String id, @RequestBody ChargeRequest chargeRequest) throws StripeException, AuthenticationException, IOException {
+    studentPaymentService.payTuitionFees(id, chargeRequest);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity updateStudentProfile(@PathVariable String id, @RequestBody StudentUpdateRequest studentUpdateRequest) throws StripeException {
+    studentService.updateStudent(id, studentUpdateRequest);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity changePassword(@PathVariable String id, @RequestBody  UpdatePasswordRequest updatePasswordRequest) {
+    studentService.changePassword(id,updatePasswordRequest);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) throws MessagingException {
+    studentService.resetPassword(resetPasswordRequest);
+    return ResponseUtility.buildOkResponse();
+
+  }
+
+  @Override
+  public ResponseEntity updatePassword(@RequestBody SetPasswordRequest setPasswordRequest) {
+    studentService.updatePassword(setPasswordRequest);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity updatePaymentMethod(@PathVariable String id,@RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException {
+    studentPaymentService.updateStripePaymentMethod(stripeTokenRequest, id);
     return ResponseUtility.buildOkResponse();
   }
 

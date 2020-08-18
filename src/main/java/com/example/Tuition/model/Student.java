@@ -2,12 +2,10 @@ package com.example.Tuition.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +55,14 @@ public class Student {
 
   private LocalDate dateOfBirth;
 
-  @OneToMany(mappedBy = "student", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @OneToMany(mappedBy = "student", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   private List<Interests> interests = new ArrayList<>();
 
   private String profilePicUrl;
+
+  public void setInterests(List<Interests> interests) {
+    this.interests.clear();
+    this.interests.addAll(interests);
+  }
 
 }
