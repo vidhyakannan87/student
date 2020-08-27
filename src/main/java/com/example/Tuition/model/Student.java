@@ -53,16 +53,27 @@ public class Student {
   @JsonIgnore
   private String stripeCustomerId;
 
+  @JsonIgnore
+  private String razorPayCustomerId;
+
   private LocalDate dateOfBirth;
 
   @OneToMany(mappedBy = "student", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   private List<Interests> interests = new ArrayList<>();
+
+  @OneToMany(mappedBy = "student", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  private List<StudentInvoice> studentInvoices = new ArrayList<>();
 
   private String profilePicUrl;
 
   public void setInterests(List<Interests> interests) {
     this.interests.clear();
     this.interests.addAll(interests);
+  }
+
+  public void setStudentInvoices(List<StudentInvoice> invoices){
+    this.studentInvoices.clear();
+    this.setStudentInvoices(invoices);
   }
 
 }

@@ -7,6 +7,7 @@ import com.example.Tuition.service.OktaAuthenticationService;
 import com.example.Tuition.service.StudentPaymentService;
 import com.example.Tuition.service.StudentService;
 import com.okta.authn.sdk.AuthenticationException;
+import com.razorpay.RazorpayException;
 import com.stripe.exception.StripeException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,19 +51,25 @@ public class StudentControllerImpl implements StudentController {
   }
 
   @Override
-  public ResponseEntity setPaymentProfile(@PathVariable String id, @RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException {
+  public ResponseEntity setStripePaymentProfile(@PathVariable String id, @RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException {
     studentPaymentService.createStripeCustomerProfile(stripeTokenRequest, id);
     return ResponseUtility.buildOkResponse();
   }
 
   @Override
-  public ResponseEntity payTuitionFees(@PathVariable String id, @RequestBody ChargeRequest chargeRequest) throws StripeException, AuthenticationException, IOException {
+  public ResponseEntity setRazorPayProfile(@PathVariable String id) throws RazorpayException {
+    studentPaymentService.createRazorPayCustomerProfile(id);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity payTuitionFeesViaStripe(@PathVariable String id, @RequestBody ChargeRequest chargeRequest) throws StripeException, AuthenticationException, IOException {
     studentPaymentService.payTuitionFees(id, chargeRequest);
     return ResponseUtility.buildOkResponse();
   }
 
   @Override
-  public ResponseEntity updateStudentProfile(@PathVariable String id, @RequestBody StudentUpdateRequest studentUpdateRequest) throws StripeException {
+  public ResponseEntity updateStudentProfile(@PathVariable String id, @RequestBody StudentUpdateRequest studentUpdateRequest) throws StripeException, RazorpayException {
     studentService.updateStudent(id, studentUpdateRequest);
     return ResponseUtility.buildOkResponse();
   }
@@ -89,6 +96,18 @@ public class StudentControllerImpl implements StudentController {
   @Override
   public ResponseEntity updatePaymentMethod(@PathVariable String id,@RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException {
     studentPaymentService.updateStripePaymentMethod(stripeTokenRequest, id);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity payTuitionFeesViaRazorPay(@PathVariable String id,@RequestBody ChargeRequest chargeRequest) throws RazorpayException{
+    studentPaymentService.createPaymentLink(id,chargeRequest);
+    return ResponseUtility.buildOkResponse();
+  }
+
+  @Override
+  public ResponseEntity createRazorPaySubscription(@PathVariable String id, @RequestBody RazorPaySubscriptionRequest subscriptionRequest) throws RazorpayException {
+    studentPaymentService.createSubscriptionLink(id, subscriptionRequest);
     return ResponseUtility.buildOkResponse();
   }
 

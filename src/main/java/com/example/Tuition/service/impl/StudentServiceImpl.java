@@ -7,6 +7,7 @@ import com.example.Tuition.model.Student;
 import com.example.Tuition.model.StudentPasswordResetToken;
 import com.example.Tuition.repository.StudentRepository;
 import com.example.Tuition.service.*;
+import com.razorpay.RazorpayException;
 import com.stripe.exception.StripeException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,7 @@ public class StudentServiceImpl implements StudentService {
   private final EmailService emailService;
   private final StudentPasswordResetTokenService studentPasswordResetTokenService;
   private final StripeClientService stripeClientService;
+  private final RazorPayClientService razorPayClientService;
 
   private final ModelMapper modelMapper = new ModelMapper();
 
@@ -36,12 +38,13 @@ public class StudentServiceImpl implements StudentService {
   private String baseUrl;
 
 
-  public StudentServiceImpl(StudentRepository studentRepository, OktaUserService oktaUserService, EmailService emailService, StudentPasswordResetTokenService studentPasswordResetTokenService, StripeClientService stripeClientService) {
+  public StudentServiceImpl(StudentRepository studentRepository, OktaUserService oktaUserService, EmailService emailService, StudentPasswordResetTokenService studentPasswordResetTokenService, StripeClientService stripeClientService, RazorPayClientService razorPayClientService) {
     this.studentRepository = studentRepository;
     this.oktaUserService = oktaUserService;
     this.emailService = emailService;
     this.studentPasswordResetTokenService = studentPasswordResetTokenService;
     this.stripeClientService = stripeClientService;
+    this.razorPayClientService = razorPayClientService;
   }
 
   @Override
@@ -69,7 +72,7 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  public void updateStudent(String uuid, StudentUpdateRequest studentRequest) throws StripeException {
+  public void updateStudent(String uuid, StudentUpdateRequest studentRequest) throws StripeException, RazorpayException {
     Student existingStudent = getUserByUUID(uuid);
 
     if (!existingStudent.getFirstName().equals(studentRequest.getFirstName())) {
@@ -84,6 +87,11 @@ public class StudentServiceImpl implements StudentService {
     if (!existingStudent.getEducationBoard().equals(studentRequest.getEducationBoard())) {
       existingStudent.setEducationBoard(studentRequest.getEducationBoard());
     }
+
+    if( existingStudent.getRazorPayCustomerId() != null &&(!existingStudent.getUserName().equals(studentRequest.getUserName()) || !existingStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber()))){
+      razorPayClientService.updateRazorPayCustomer(existingStudent,studentRequest);
+    }
+
     if (!existingStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber())) {
       existingStudent.setPhoneNumber(studentRequest.getPhoneNumber());
     }
@@ -93,6 +101,9 @@ public class StudentServiceImpl implements StudentService {
       existingStudent.setUserName(studentRequest.getUserName());
       existingStudent.setEmail(studentRequest.getEmail());
     }
+
+
+
     if (!studentRequest.getOldPassword().equals(studentRequest.getNewPassword())) {
       UpdatePasswordRequest updatePasswordRequest = modelMapper.map(studentRequest, UpdatePasswordRequest.class);
       oktaUserService.changePassword(existingStudent, updatePasswordRequest);

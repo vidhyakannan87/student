@@ -2,6 +2,7 @@ package com.example.Tuition.controller;
 
 import com.example.Tuition.api.request.*;
 import com.okta.authn.sdk.AuthenticationException;
+import com.razorpay.RazorpayException;
 import com.stripe.exception.CardException;
 import com.stripe.exception.InvalidRequestException;
 import com.stripe.exception.StripeException;
@@ -24,19 +25,24 @@ public interface StudentController {
   @GetMapping("/me")
   ResponseEntity getStudentFromBearerToken();
 
-  @PostMapping(value = "/{id}/setPaymentProfile")
+  @PostMapping(value = "/{id}/setStripePaymentProfile")
   @PreAuthorize("#id == authentication.name")
-  ResponseEntity setPaymentProfile(@PathVariable String id, @RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException, AuthenticationException, IOException;
+  ResponseEntity setStripePaymentProfile(@PathVariable String id, @RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException, AuthenticationException, IOException;
+
+
+  @PostMapping(value = "/{id}/setRazorPayProfile")
+  @PreAuthorize("#id == authentication.name")
+  ResponseEntity setRazorPayProfile(@PathVariable String id) throws RazorpayException;
 
 
   @PostMapping(value = "/{id}/payment")
   @PreAuthorize("#id == authentication.name")
-  ResponseEntity payTuitionFees(@PathVariable String id, @RequestBody ChargeRequest chargeRequest) throws StripeException, AuthenticationException, IOException;
+  ResponseEntity payTuitionFeesViaStripe(@PathVariable String id, @RequestBody ChargeRequest chargeRequest) throws StripeException, AuthenticationException, IOException;
 
 
   @PutMapping(value = "/{id}")
   @PreAuthorize("#id == authentication.name")
-  ResponseEntity updateStudentProfile(@PathVariable String id, @RequestBody StudentUpdateRequest studentUpdateRequest) throws StripeException;
+  ResponseEntity updateStudentProfile(@PathVariable String id, @RequestBody StudentUpdateRequest studentUpdateRequest) throws StripeException, RazorpayException;
 
   @PatchMapping(value = "/{id}/password")
   @PreAuthorize("#id == authentication.name")
@@ -53,6 +59,15 @@ public interface StudentController {
   @PutMapping(value = "/{id}/updatePaymentProfile")
   @PreAuthorize("#id == authentication.name")
   ResponseEntity updatePaymentMethod(@PathVariable String id, @RequestBody StripeTokenRequest stripeTokenRequest) throws StripeException;
+
+
+  @PostMapping(value = "/{id}/paymentLink")
+  @PreAuthorize("#id == authentication.name")
+  ResponseEntity payTuitionFeesViaRazorPay(@PathVariable String id, @RequestBody ChargeRequest chargeRequest) throws RazorpayException;
+
+  @PostMapping(value = "/{id}/subscriptions")
+  @PreAuthorize("#id == authentication.name")
+  ResponseEntity createRazorPaySubscription(@PathVariable String id, @RequestBody RazorPaySubscriptionRequest subscriptionRequest) throws RazorpayException;
 
 
 }

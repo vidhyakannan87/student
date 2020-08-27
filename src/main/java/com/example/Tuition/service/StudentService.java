@@ -2,6 +2,7 @@ package com.example.Tuition.service;
 
 import com.example.Tuition.api.request.*;
 import com.example.Tuition.model.Student;
+import com.razorpay.RazorpayException;
 import com.stripe.exception.StripeException;
 
 import javax.mail.MessagingException;
@@ -16,7 +17,7 @@ public interface StudentService {
 
   void saveStudent(Student student);
 
-  void updateStudent(String uuid, StudentUpdateRequest studentUpdateRequest) throws StripeException;
+  void updateStudent(String uuid, StudentUpdateRequest studentUpdateRequest) throws StripeException, RazorpayException;
 
   void changePassword(String uuid, UpdatePasswordRequest updatePasswordRequest);
 

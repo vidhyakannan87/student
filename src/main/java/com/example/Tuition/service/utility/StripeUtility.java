@@ -18,4 +18,12 @@ public class StripeUtility {
     return Float.valueOf(decimalFormat.format(dollarCost));
 
   }
+
+  public static int convertRupeesToPaise(Float cost) {
+
+    return Float.valueOf(cost * 100).intValue();
+  }
+
+
+
 }

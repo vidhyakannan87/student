@@ -26,7 +26,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
   private static final String GROUPS = "groups";
   private final OktaConfig oktaConfig;
 
-  private String STUDENT_ROLE = Role.Names.STUDENT;
+  private String STUDENT_ROLE =   Role.Names.STUDENT;
 
   public JWTAuthorizationFilter(AuthenticationManager authManager, OktaConfig oktaConfig) {
     super(authManager);
